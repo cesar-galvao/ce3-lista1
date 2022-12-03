@@ -2,7 +2,7 @@
 title: César A. Galvão
 image: portrait.png
 about:
-  template: jolla
+  template: trestles
   image-shape: round
   links:
     - icon: github
