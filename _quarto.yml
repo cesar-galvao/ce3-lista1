@@ -43,4 +43,5 @@ format:
     html-math-method: katex
     code-fold: true
 
-
+execute:
+  freeze: auto
