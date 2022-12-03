@@ -16,7 +16,6 @@ O desenvolvimento deste curso ocorreu durante todo o ano de 2021, sob orienta√ß√
 
 <br>
 
-
 ::: {layout="[[-12,5,-5,5,-12]]"}
 [![](unb.png)](https://www.unb.br/){width=10%}
 
