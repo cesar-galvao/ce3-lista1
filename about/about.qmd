@@ -1,0 +1,33 @@
+---
+title: César A. Galvão
+image: portrait.png
+about:
+  template: jolla
+  image-shape: round
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/cesar-galvao
+---
+
+:::{#hero-heading}
+
+Entusiasta de Datavis, learning junkee, aspirante a cientista de dados, professor sempre. Se me tirar do computador, me leve para a natureza!
+
+## Educação
+
+**Universidade de Brasília** | Brasília, DF
+
+Psicólogo | Jan 2007 - Dez 2011
+
+**Universidade de Brasília** | Brasília, DF
+
+B.A. em Estatística | Jan 2019 - Atual
+
+## Experiência
+
+**Escola de Administração Fazendária - Esaf** | Analista, líder de equipes | 2013 - 2019
+
+**Escola Nacional de Administração Pública - Enap** | Cientista de Dados | 2019 - Atual
+
+:::

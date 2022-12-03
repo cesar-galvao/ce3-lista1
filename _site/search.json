@@ -1,0 +1,44 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Apresentação",
+    "section": "",
+    "text": "Este é meu primeiro site feito em Quarto destinado a servir de treinamento e de entrega das listas de exercícios da disciplina de Computação em Massa (Tópicos em Estatística II).\nTodo o código está disponível no repositório, com código público, que pode ser acessado pelo ícone no canto direito superior da tela."
+  },
+  {
+    "objectID": "index.html#desenvolvimento",
+    "href": "index.html#desenvolvimento",
+    "title": "Apresentação",
+    "section": "Desenvolvimento",
+    "text": "Desenvolvimento\nO desenvolvimento deste curso ocorreu durante todo o ano de 2021, sob orientação do professor Guilherme Rodrigues e com colaboração do colega Gabriel José dos Reis Carvalho."
+  },
+  {
+    "objectID": "about/about.html",
+    "href": "about/about.html",
+    "title": "César A. Galvão",
+    "section": "",
+    "text": "Entusiasta de Datavis, learning junkee, aspirante a cientista de dados, professor sempre. Se me tirar do computador, me leve para a natureza!\n\n\nUniversidade de Brasília | Brasília, DF\nPsicólogo | Jan 2007 - Dez 2011\nUniversidade de Brasília | Brasília, DF\nB.A. em Estatística | Jan 2019 - Atual\n\n\n\nEscola de Administração Fazendária - Esaf | Analista, líder de equipes | 2013 - 2019\nEscola Nacional de Administração Pública - Enap | Cientista de Dados | 2019 - Atual"
+  },
+  {
+    "objectID": "lista_1/lista1.html",
+    "href": "lista_1/lista1.html",
+    "title": "Descrição",
+    "section": "",
+    "text": "A primeira lista do curso trata do tema Computação eficiente (dados em memória). Nesta lista, utilizamos os pacotes vroom e data.table para analisar, com rapidez computacional e eficiente uso de memória, dados públicos sobre a vacinação contra a Covid-19."
+  },
+  {
+    "objectID": "lista_1/questao2.html",
+    "href": "lista_1/questao2.html",
+    "title": "Questão 2",
+    "section": "",
+    "text": "Code\n1 + 1\n\n\n[1] 2"
+  },
+  {
+    "objectID": "lista_1/questao1.html",
+    "href": "lista_1/questao1.html",
+    "title": "Questão 1",
+    "section": "",
+    "text": "item b)"
+  }
+]

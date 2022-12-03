@@ -1,0 +1,16 @@
+---
+title: "Apresentação"
+format:
+  html:
+    toc: false
+---
+
+---
+
+Este é meu primeiro site feito em [Quarto](https://quarto.org/) destinado a servir de treinamento e de entrega das listas de exercícios da disciplina de Computação em Massa (Tópicos em Estatística II).
+
+Todo o código está disponível no repositório, com código público, que pode ser acessado pelo ícone no canto direito superior da tela.
+
+## Desenvolvimento
+O desenvolvimento deste curso ocorreu durante todo o ano de 2021, sob orientação do professor [Guilherme Rodrigues](http://lattes.cnpq.br/0809840707861688) e com colaboração do colega [Gabriel José dos Reis Carvalho](http://lattes.cnpq.br/9277239532170179).
+

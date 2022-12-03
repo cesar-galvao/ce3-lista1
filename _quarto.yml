@@ -1,0 +1,46 @@
+project:
+  type: website
+
+website:
+  title: "CE3"
+  navbar:
+    background: primary
+    search: true
+    left:
+      - text: "Home"
+        file: index.qmd
+      - text: "Lista 1"
+        file: lista_1/lista1.qmd
+
+      - text: "About"
+        file: about/about.qmd
+    right: 
+      - icon: github
+        href: https://github.com/cesar-galvao/ce3-lista1
+  
+  sidebar: 
+    - title: "Home"
+      style: "docked"
+      contents: 
+      - index.qmd.qmd
+    - title: "Lista 1"
+      style: "docked"
+      contents: 
+      - lista_1/lista1.qmd
+      - lista_1/questao1.qmd
+      - lista_1/questao2.qmd
+  
+  page-navigation: true
+  page-footer: "César A. Galvão, 2022"
+
+
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    toc: true
+    toc-title: Conteúdo
+    html-math-method: katex
+    code-fold: true
+
+
