@@ -10,10 +10,6 @@ about:
       href: https://github.com/cesar-galvao
 ---
 
-<style>
-body {
-text-align: justify}
-</style>
 
 :::{#hero-heading}
 
