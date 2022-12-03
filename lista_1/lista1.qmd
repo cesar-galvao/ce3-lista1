@@ -1,5 +1,9 @@
 ---
 title: "Descrição"
 ---
+<style>
+body {
+text-align: justify}
+</style>
 
 A primeira lista do curso trata do tema Computação eficiente (dados em memória). Nesta lista, utilizamos os pacotes vroom e data.table para analisar, com rapidez computacional e eficiente uso de memória, dados públicos sobre a vacinação contra a Covid-19.

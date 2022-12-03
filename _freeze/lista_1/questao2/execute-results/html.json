@@ -1,8 +1,10 @@
 {
-  "hash": "1bfb39010d5b0e78b96e71333cfc1ae6",
+  "hash": "117d426bc23bab852c086ddad2fd1fdf",
   "result": {
-    "markdown": "---\ntitle: \"Questão 2\"\n---\n\n\nAbout this site\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n",
-    "supporting": [],
+    "markdown": "---\ntitle: \"Questão 2\"\n---\n\n\n<style>\nbody {\ntext-align: justify}\n</style>\n\nAbout this site\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n",
+    "supporting": [
+      "questao2_files"
+    ],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],

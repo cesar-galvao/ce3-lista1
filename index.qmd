@@ -5,6 +5,11 @@ format:
     toc: false
 ---
 
+<style>
+body {
+text-align: justify}
+</style>
+
 ---
 
 Este é meu primeiro site feito em [Quarto](https://quarto.org/) destinado a servir de treinamento e de entrega das listas de exercícios da disciplina de Computação em Massa (Tópicos em Estatística II), ofertada pelo Departamento de Estatística da Universidade de Brasília no segundo semestre letivo de 2022.

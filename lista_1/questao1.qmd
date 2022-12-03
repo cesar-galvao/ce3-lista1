@@ -1,6 +1,12 @@
 ---
 title: "Questão 1"
 ---
+
+<style>
+body {
+text-align: justify}
+</style>
+
 # item a)
 
 About this site

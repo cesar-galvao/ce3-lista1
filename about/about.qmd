@@ -10,6 +10,11 @@ about:
       href: https://github.com/cesar-galvao
 ---
 
+<style>
+body {
+text-align: justify}
+</style>
+
 :::{#hero-heading}
 
 Entusiasta de Datavis, learning junkee, aspirante a cientista de dados, professor sempre. Se me tirar do computador, me leve para a natureza!
