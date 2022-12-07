@@ -4,8 +4,6 @@ subtitle: "Manipulação de dados"
 ---
 
 ```{r load-pkg, echo = FALSE, message = FALSE}
-library(tidyverse)
-library(pacman)
 path <- "../../dados_de_trabalhos/lista_1/datasus/"
 ```
 
@@ -17,3 +15,14 @@ text-align: justify}
 
 
 ## Item a)
+
+```{r}
+pacman::p_load(tidyverse, data.table, dtplyr, microbenchmark, geobr)
+```
+
+
+## Item b)
+
+## Item c)
+
+## Item d)

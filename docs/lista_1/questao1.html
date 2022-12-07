@@ -217,7 +217,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title d-none d-lg-block">Questão 1</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+<h1 class="title d-none d-lg-block">Questão 1</h1>
 <p class="subtitle lead">Leitura eficiente de dados</p>
 </div>
 
@@ -241,17 +241,15 @@ text-align: justify}
 </style>
 <section id="item-a" class="level2">
 <h2 class="anchored" data-anchor-id="item-a">Item a)</h2>
-<p>Verificando a página do link disponibilizado e inspecionando o link da primeira parte de dois estados, obtém-se:</p>
+<p>Verificando a página do link disponibilizado e inspecionando links de dois estados, obtém-se:</p>
 <ul>
-<li>https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv – AC parte 1</li>
-<li>https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00001-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv – AC parte 2</li>
-<li>https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAL/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv – AL parte 1</li>
+<li><strong>AC parte 1</strong> – https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv</li>
+<li><strong>AC parte 2</strong> – https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00001-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv –</li>
+<li><strong>AL parte 1</strong> – https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAL/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv</li>
 </ul>
 <p>Nota-se que a diferenciação quanto à UF ocorre em <code>uf%3D**</code> e que a diferenciação quanto à parte do download ocorre logo em seguida em <code>part-0000*</code>, iniciando a contagem em zero. Além disso, fica evidente que se trata de um arquivo <code>.csv</code>.</p>
 <p>O código a seguir cria uma pasta, caso não exista, e varre a combinação de três partes para as UF: AC, AL, AM e AP.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">"../dados_de_trabalhos/lista_1/datasus/"</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># verifica e cria pasta</span></span>
@@ -277,14 +275,10 @@ text-align: justify}
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># varre os vetores realizando o download</span></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">walk2</span>(iterate<span class="sc">$</span>caminho, iterate<span class="sc">$</span>destfile,</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      <span class="cf">function</span>(x, y) <span class="fu">download.file</span>(<span class="at">url =</span> x, <span class="at">destfile =</span> y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Vemos a seguir que houve sucesso no download:</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "AC0.csv" "AC1.csv" "AC2.csv" "AL0.csv" "AL1.csv" "AL2.csv" "AM0.csv"
  [8] "AM1.csv" "AM2.csv" "AP0.csv" "AP1.csv" "AP2.csv"</code></pre>
@@ -293,16 +287,13 @@ text-align: justify}
 </section>
 <section id="item-b" class="level2">
 <h2 class="anchored" data-anchor-id="item-b">Item b)</h2>
-<p>Carregamos o pacote <code>vroom</code> usando a função <code>pacman¨p_load()</code> e carregamos o primeiro dos arquivos, correspondente à primeira parte de dados para o estado do Acre.</p>
+<p>Carregamos o pacote <code>vroom</code> usando a função <code>pacman::p_load()</code> e carregamos o primeiro dos arquivos, correspondente à primeira parte de dados para o estado do Acre.</p>
 <p>Utilizando a função <code>dplyr::glimpse()</code>, verificamos que há 553.953 observações de 32 variáveis neste banco de dados. Além disso, nota-se que a função <code>vroom()</code> identificou com sucesso diversos tipos de dados das colunas, inclusive de datas. No entanto, colunas com números identificadores foram classificadas como números, o que pode trazer problemas se o número, como ocorre com o cadastro de pessoa física, inicia em um zero.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, vroom)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dados1 <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="fu">paste0</span>(path, <span class="st">"AC0.csv"</span>))</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(dados1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 553,953
 Columns: 32
@@ -346,19 +337,13 @@ $ sistema_origem                           &lt;chr&gt; "Novo PNI", "Novo PNI", "
 <p>A seguir verificamos o tamanho em disco do arquivo que estamos explorando e o tamanho do objeto criado após a leitura para a memória.</p>
 <p>Interessantemente, parece haver uma pequena economia de <em>bytes</em>. No entanto, o espaço ocupado em memória é proporcionalmente mais custoso em relação ao que está no disco rígido.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tamanho em megabytes do arquivo</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.size</span>(<span class="fu">paste0</span>(path, <span class="st">"AC0.csv"</span>))<span class="sc">*</span><span class="dv">10</span><span class="sc">^</span>(<span class="sc">-</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 283.0886</code></pre>
 </div>
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tamanho do objeto</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados1), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "256.6 Mb"</code></pre>
 </div>
@@ -368,8 +353,6 @@ $ sistema_origem                           &lt;chr&gt; "Novo PNI", "Novo PNI", "
 <h2 class="anchored" data-anchor-id="item-d">Item d)</h2>
 <p>Quando filtramos o arquivo diretamente no procedimento de leitura mediante a utilização de uma conexão <code>pipe()</code> para filtrar as vacinas da Janssen, verificamos que apenas 19.623 linhas foram incluídas, assim como todas as 32 variáveis que descrevem cada observação.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># leitura filtrada</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>comando_grep <span class="ot">&lt;-</span> <span class="st">"grep -e vacina_fabricante_nome -e JANSSEN ../../dados_de_trabalhos/lista_1/datasus/AC0.csv"</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -379,7 +362,6 @@ $ sistema_origem                           &lt;chr&gt; "Novo PNI", "Novo PNI", "
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># tamanho</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados_jan), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "9.8 Mb"</code></pre>
 </div>
@@ -403,8 +385,6 @@ Note
 <h2 class="anchored" data-anchor-id="item-e">Item e)</h2>
 <p>Por último, realizamos a leitura de todos os arquivos obtidos do DataSUS filtrados pelo fabricante Janssen.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#obtencao de enderecos completos dos arquivos</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>nomes_arquivos <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="fu">list.files</span>(path), <span class="at">collapse =</span> <span class="st">" "</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -416,10 +396,9 @@ Note
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># tamanho</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados_jan), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados_jan2), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "9.8 Mb"</code></pre>
+<pre><code>[1] "224.4 Mb"</code></pre>
 </div>
 </div>
 <p>Dessa forma obtemos um objeto em memória menor do que o primeiro arquivo avaliado. Há um total de 407.582 linhas ocupando 224.4 Mb.</p>
@@ -476,57 +455,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  const viewSource = window.document.getElementById('quarto-view-source') ||
-                     window.document.getElementById('quarto-code-tools-source');
-  if (viewSource) {
-    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-    viewSource.addEventListener("click", function(e) {
-      if (sourceUrl) {
-        // rstudio viewer pane
-        if (/\bcapabilities=\b/.test(window.location)) {
-          window.open(sourceUrl);
-        } else {
-          window.location.href = sourceUrl;
-        }
-      } else {
-        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-        modal.show();
-      }
-      return false;
-    });
-  }
-  function toggleCodeHandler(show) {
-    return function(e) {
-      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-      for (let i=0; i<detailsSrc.length; i++) {
-        const details = detailsSrc[i].parentElement;
-        if (show) {
-          details.open = true;
-        } else {
-          details.removeAttribute("open");
-        }
-      }
-      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-      const fromCls = show ? "hidden" : "unhidden";
-      const toCls = show ? "unhidden" : "hidden";
-      for (let i=0; i<cellCodeDivs.length; i++) {
-        const codeDiv = cellCodeDivs[i];
-        if (codeDiv.classList.contains(fromCls)) {
-          codeDiv.classList.remove(fromCls);
-          codeDiv.classList.add(toCls);
-        } 
-      }
-      return false;
-    }
-  }
-  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-  if (hideAllCode) {
-    hideAllCode.addEventListener("click", toggleCodeHandler(false));
-  }
-  const showAllCode = window.document.getElementById("quarto-show-all-code");
-  if (showAllCode) {
-    showAllCode.addEventListener("click", toggleCodeHandler(true));
-  }
   function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,

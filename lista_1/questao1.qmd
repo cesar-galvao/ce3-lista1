@@ -18,11 +18,11 @@ text-align: justify}
 
 ## Item a)
 
-Verificando a página do link disponibilizado e inspecionando o link da primeira parte de dois estados, obtém-se:
+Verificando a página do link disponibilizado e inspecionando links de dois estados, obtém-se:
 
-* https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- AC parte 1
-* https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00001-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- AC parte 2
-* https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAL/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- AL parte 1
+* **AC parte 1** -- https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv
+* **AC parte 2** -- https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00001-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- 
+* **AL parte 1** -- https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAL/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv
 
 Nota-se que a diferenciação quanto à UF ocorre em `uf%3D**` e que a diferenciação quanto à parte do download ocorre logo em seguida em `part-0000*`, iniciando a contagem em zero. Além disso, fica evidente que se trata de um arquivo `.csv`. 
 
@@ -65,7 +65,7 @@ list.files(path)
 
 ## Item b)
 
-Carregamos o pacote `vroom` usando a função `pacman¨p_load()` e carregamos o primeiro dos arquivos, correspondente à primeira parte de dados para o estado do Acre.
+Carregamos o pacote `vroom` usando a função `pacman::p_load()` e carregamos o primeiro dos arquivos, correspondente à primeira parte de dados para o estado do Acre.
 
 Utilizando a função `dplyr::glimpse()`, verificamos que há 553.953 observações de 32 variáveis neste banco de dados. Além disso, nota-se que a função `vroom()` identificou com sucesso diversos tipos de dados das colunas, inclusive de datas. No entanto, colunas com números identificadores foram classificadas como números, o que pode trazer problemas se o número, como ocorre com o cadastro de pessoa física, inicia em um zero.
 
@@ -131,10 +131,14 @@ dados_jan2 <- vroom(pipe(comando_grep),
 )
 
 # tamanho
-format(object.size(dados_jan), units = "Mb")
+format(object.size(dados_jan2), units = "Mb")
 ```
 
-Dessa forma obtemos um objeto em memória menor do que o primeiro arquivo avaliado. Há um total de `r format(nrow(dados_jan2), big.mark = ".", decimal.mark = ",")` linhas ocupando `r format(object.size(dados_jan2), units = "Mb", big.mark = ".", decimal.mark = ",")`.
+Dessa forma obtemos um objeto em memória menor do que o primeiro arquivo avaliado. Há um total de `r format(nrow(dados_jan2), big.mark = ".", decimal.mark = ",")` linhas ocupando `r format(object.size(dados_jan2), units = "Mb", big.mark = ",", small.mark = ",", decimal.mark = ".")`.
 
+```{r include = FALSE}
+rm(list =ls())
+gc()
+```
 
 
