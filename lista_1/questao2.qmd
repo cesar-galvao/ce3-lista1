@@ -24,8 +24,18 @@ pacman::p_load(tidyverse, data.table, dtplyr, microbenchmark, geobr)
 
 O procedimento a seguir lê novamente todos os arquivos adquiridos, mantendo apenas as colunas `estabelecimento_uf`, `vacina_descricao_dose` e `estabelecimento_municipio_codigo`, e obtem os dados do pacote `geobr` para as regiões de saúde.
 
-```{r fread-data}
+```{r geobr, include = FALSE}
 r_saude <- geobr::read_health_region(year = 2013)
+```
+
+```{r geobr-false, eval = FALSE}
+#puxa dados das regioes de saudeo do geobr
+r_saude <- geobr::read_health_region(year = 2013)
+```
+
+
+
+```{r fread-data}
 
 # ler arquivos com map e fread(select = c(nome das colunas))
 
