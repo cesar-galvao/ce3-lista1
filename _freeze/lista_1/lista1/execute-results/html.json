@@ -1,0 +1,14 @@
+{
+  "hash": "690ed2074b1d8bebf5c7bcc9695ab933",
+  "result": {
+    "markdown": "---\ntitle: \"Descrição\"\n---\n\n<style>\nbody {\ntext-align: justify}\n</style>\n\nA primeira lista do curso trata do tema Computação eficiente (dados em memória). Nesta lista, utilizamos os pacotes `vroom` e `data.table` para analisar, com rapidez computacional e eficiente uso de memória, dados públicos sobre a vacinação contra a Covid-19.\n\nPara o download dos dados dos estados do Acre, Alagoas, Amazonas e Amapá a partir do [portal de dados abertos do DataSUS](https://opendatasus.saude.gov.br/dataset/covid-19-vacinacao/resource/5093679f-12c3-4d6b-b7bd-07694de54173?inner_span=True), o seguinte código foi utilizado. É possível utilizá-lo para replicação, no entanto os dados não estão hospedados no repositório.\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nmy code\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

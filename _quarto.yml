@@ -43,6 +43,11 @@ format:
     toc-title: Conteúdo
     html-math-method: katex
     code-fold: true
+    code-overflow: wrap
+    code-copy: true
+    code-tools: 
+      source: false
+      toggle: true
 
 execute:
   freeze: auto

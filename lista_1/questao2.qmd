@@ -1,14 +1,19 @@
 ---
 title: "Questão 2"
+subtitle: "Manipulação de dados"
 ---
+
+```{r load-pkg, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(pacman)
+path <- "../../dados_de_trabalhos/lista_1/datasus/"
+```
+
 
 <style>
 body {
 text-align: justify}
 </style>
 
-About this site
 
-```{r}
-1 + 1
-```
+## Item a)

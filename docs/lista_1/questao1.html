@@ -204,8 +204,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Conteúdo</h2>
    
   <ul>
-  <li><a href="#item-a" id="toc-item-a" class="nav-link active" data-scroll-target="#item-a">item a)</a></li>
-  <li><a href="#item-b" id="toc-item-b" class="nav-link" data-scroll-target="#item-b">item b)</a></li>
+  <li><a href="#item-a" id="toc-item-a" class="nav-link active" data-scroll-target="#item-a">Item a)</a></li>
+  <li><a href="#item-b" id="toc-item-b" class="nav-link" data-scroll-target="#item-b">Item b)</a></li>
+  <li><a href="#item-c" id="toc-item-c" class="nav-link" data-scroll-target="#item-c">Item c)</a></li>
+  <li><a href="#item-d" id="toc-item-d" class="nav-link" data-scroll-target="#item-d">Item d)</a></li>
+  <li><a href="#item-e" id="toc-item-e" class="nav-link" data-scroll-target="#item-e">Item e)</a></li>
   </ul>
 </nav>
     </div>
@@ -214,7 +217,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Questão 1</h1>
+<div class="quarto-title-block"><div><h1 class="title d-none d-lg-block">Questão 1</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+<p class="subtitle lead">Leitura eficiente de dados</p>
 </div>
 
 
@@ -228,22 +232,159 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
+<div class="cell">
+
+</div>
 <style>
 body {
 text-align: justify}
 </style>
-<section id="item-a" class="level1">
-<h1>item a)</h1>
-<p>About this site</p>
+<section id="item-a" class="level2">
+<h2 class="anchored" data-anchor-id="item-a">Item a)</h2>
+<p>Verificando a página do link disponibilizado e inspecionando o link da primeira parte de dois estados, obtém-se:</p>
+<ul>
+<li>https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv – AC parte 1</li>
+<li>https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00001-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv – AC parte 2</li>
+<li>https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAL/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv – AL parte 1</li>
+</ul>
+<p>Nota-se que a diferenciação quanto à UF ocorre em <code>uf%3D**</code> e que a diferenciação quanto à parte do download ocorre logo em seguida em <code>part-0000*</code>, iniciando a contagem em zero. Além disso, fica evidente que se trata de um arquivo <code>.csv</code>.</p>
+<p>O código a seguir cria uma pasta, caso não exista, e varre a combinação de três partes para as UF: AC, AL, AM e AP.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">"../dados_de_trabalhos/lista_1/datasus/"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># verifica e cria pasta</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(path)){</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(path)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># cria vetores sobre os quais se ira iterar</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>iterate <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">uf =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'AC'</span>, <span class="st">'AL'</span>, <span class="st">'AM'</span>, <span class="st">'AP'</span>), <span class="at">each =</span> <span class="dv">3</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">partes =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>), <span class="dv">4</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">caminho =</span> <span class="fu">paste0</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3D"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            uf,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">"/part-0000"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            partes,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">"-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv"</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">destfile =</span> <span class="fu">paste0</span>(</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        path,uf, partes, <span class="st">".csv"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      ))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># varre os vetores realizando o download</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">walk2</span>(iterate<span class="sc">$</span>caminho, iterate<span class="sc">$</span>destfile,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      <span class="cf">function</span>(x, y) <span class="fu">download.file</span>(<span class="at">url =</span> x, <span class="at">destfile =</span> y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Vemos a seguir que houve sucesso no download:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code> [1] "AC0.csv" "AC1.csv" "AC2.csv" "AL0.csv" "AL1.csv" "AL2.csv" "AM0.csv"
+ [8] "AM1.csv" "AM2.csv" "AP0.csv" "AP1.csv" "AP2.csv"</code></pre>
 </div>
 </div>
+</section>
+<section id="item-b" class="level2">
+<h2 class="anchored" data-anchor-id="item-b">Item b)</h2>
+<p>Carregamos o pacote <code>vroom</code> usando a função <code>pacman¨p_load()</code> e carregamos o primeiro dos arquivos, correspondente à primeira parte de dados para o estado do Acre.</p>
+<p>Utilizando a função <code>dplyr::glimpse()</code>, verificamos que há 553.953 observações de 32 variáveis neste banco de dados. Além disso, nota-se que a função <code>vroom()</code> identificou com sucesso diversos tipos de dados das colunas, inclusive de datas. No entanto, colunas com números identificadores foram classificadas como números, o que pode trazer problemas se o número, como ocorre com o cadastro de pessoa física, inicia em um zero.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, vroom)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dados1 <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="fu">paste0</span>(path, <span class="st">"AC0.csv"</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(dados1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 553,953
+Columns: 32
+$ document_id                              &lt;chr&gt; "625df13b-f8c3-4ac4-8947-ee51…
+$ paciente_id                              &lt;chr&gt; "7cf8dee49735df8d59d105db77d9…
+$ paciente_idade                           &lt;dbl&gt; 57, 39, 9, 44, 68, 38, 43, 24…
+$ paciente_dataNascimento                  &lt;date&gt; 1965-07-28, 1982-03-20, 2012…
+$ paciente_enumSexoBiologico               &lt;chr&gt; "M", "F", "M", "M", "M", "F",…
+$ paciente_racaCor_codigo                  &lt;chr&gt; "04", "03", "03", "04", "01",…
+$ paciente_racaCor_valor                   &lt;chr&gt; "AMARELA", "PARDA", "PARDA", …
+$ paciente_endereco_coIbgeMunicipio        &lt;dbl&gt; 120050, 120040, 120013, 12004…
+$ paciente_endereco_coPais                 &lt;dbl&gt; 10, 10, 10, 10, 10, 10, 10, 1…
+$ paciente_endereco_nmMunicipio            &lt;chr&gt; "SENA MADUREIRA", "RIO BRANCO…
+$ paciente_endereco_nmPais                 &lt;chr&gt; "BRASIL", "BRASIL", "BRASIL",…
+$ paciente_endereco_uf                     &lt;chr&gt; "AC", "AC", "AC", "AC", "AC",…
+$ paciente_endereco_cep                    &lt;chr&gt; "69940", "69919", "69926", NA…
+$ paciente_nacionalidade_enumNacionalidade &lt;chr&gt; "B", "B", "B", "B", "B", "B",…
+$ estabelecimento_valor                    &lt;chr&gt; "6697151", "6917291", "200287…
+$ estabelecimento_razaoSocial              &lt;chr&gt; "MINISTERIO DA SAUDE", "PREFE…
+$ estalecimento_noFantasia                 &lt;chr&gt; "DISTRITO SANITARIO ESPECIAL …
+$ estabelecimento_municipio_codigo         &lt;dbl&gt; 120050, 120040, 120013, 12004…
+$ estabelecimento_municipio_nome           &lt;chr&gt; "SENA MADUREIRA", "RIO BRANCO…
+$ estabelecimento_uf                       &lt;chr&gt; "AC", "AC", "AC", "AC", "AC",…
+$ vacina_grupoAtendimento_codigo           &lt;chr&gt; "000701", "000923", "000207",…
+$ vacina_grupoAtendimento_nome             &lt;chr&gt; "Povos indígenas em terras in…
+$ vacina_categoria_codigo                  &lt;dbl&gt; 7, 9, NA, 14, 2, 2, 2, 2, 2, …
+$ vacina_categoria_nome                    &lt;chr&gt; "Povos Indígenas", "Trabalhad…
+$ vacina_lote                              &lt;chr&gt; "202001", "210139", "FP8290",…
+$ vacina_fabricante_nome                   &lt;chr&gt; "PFIZER", "SINOVAC/BUTANTAN",…
+$ vacina_fabricante_referencia             &lt;chr&gt; "28290", "Organization/611894…
+$ vacina_dataAplicacao                     &lt;date&gt; 2022-08-31, 2021-06-17, 2022…
+$ vacina_descricao_dose                    &lt;chr&gt; "2º Reforço", "2ª Dose", "1ª …
+$ vacina_codigo                            &lt;dbl&gt; 87, 86, 99, 86, 87, 87, 85, 8…
+$ vacina_nome                              &lt;chr&gt; "COVID-19 PFIZER - COMIRNATY"…
+$ sistema_origem                           &lt;chr&gt; "Novo PNI", "Novo PNI", "Novo…</code></pre>
+</div>
+</div>
+</section>
+<section id="item-c" class="level2">
+<h2 class="anchored" data-anchor-id="item-c">Item c)</h2>
+<p>A seguir verificamos o tamanho em disco do arquivo que estamos explorando e o tamanho do objeto criado após a leitura para a memória.</p>
+<p>Interessantemente, parece haver uma pequena economia de <em>bytes</em>. No entanto, o espaço ocupado em memória é proporcionalmente mais custoso em relação ao que está no disco rígido.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tamanho em megabytes do arquivo</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.size</span>(<span class="fu">paste0</span>(path, <span class="st">"AC0.csv"</span>))<span class="sc">*</span><span class="dv">10</span><span class="sc">^</span>(<span class="sc">-</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 283.0886</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tamanho do objeto</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados1), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "256.6 Mb"</code></pre>
+</div>
+</div>
+</section>
+<section id="item-d" class="level2">
+<h2 class="anchored" data-anchor-id="item-d">Item d)</h2>
+<p>Quando filtramos o arquivo diretamente no procedimento de leitura mediante a utilização de uma conexão <code>pipe()</code> para filtrar as vacinas da Janssen, verificamos que apenas 19.623 linhas foram incluídas, assim como todas as 32 variáveis que descrevem cada observação.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># leitura filtrada</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>comando_grep <span class="ot">&lt;-</span> <span class="st">"grep -e vacina_fabricante_nome -e JANSSEN ../../dados_de_trabalhos/lista_1/datasus/AC0.csv"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>dados_jan <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="fu">pipe</span>(comando_grep), </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">locale =</span> <span class="fu">locale</span>(<span class="st">"br"</span>, <span class="at">encoding =</span> <span class="st">"latin1"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># tamanho</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados_jan), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "9.8 Mb"</code></pre>
+</div>
+</div>
+<p>Quanto ao tamanho do objeto em memória, reduzimos de <code>format(object.size(dados1), units = "Mb")</code> para <code>format(object.size(dados_jan), units = "Mb")</code>. Trata-se de uma redução de 96.2% de espaço necessário para alocação dos dados.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -254,12 +395,34 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Note that there are five types of callouts, including: <code>note</code>, <code>tip</code>, <code>warning</code>, <code>caution</code>, and <code>important</code>.</p>
+<p>Quando se usa comandos Unix, como no caso que usamos para a conexão <code>pipe()</code>, é necessário que todo o caminho do arquivo seja livre de espaços em branco. Por exemplo, o comando não funcionaria com <code>/dados de trabalhos/</code>.</p>
 </div>
 </div>
 </section>
-<section id="item-b" class="level1">
-<h1>item b)</h1>
+<section id="item-e" class="level2">
+<h2 class="anchored" data-anchor-id="item-e">Item e)</h2>
+<p>Por último, realizamos a leitura de todos os arquivos obtidos do DataSUS filtrados pelo fabricante Janssen.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#obtencao de enderecos completos dos arquivos</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>nomes_arquivos <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="fu">list.files</span>(path), <span class="at">collapse =</span> <span class="st">" "</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># leitura filtrada</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>comando_grep <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"grep -e vacina_fabricante_nome -e JANSSEN "</span>, nomes_arquivos)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>dados_jan2 <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="fu">pipe</span>(comando_grep), </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">locale =</span> <span class="fu">locale</span>(<span class="st">"br"</span>, <span class="at">encoding =</span> <span class="st">"latin1"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># tamanho</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(<span class="fu">object.size</span>(dados_jan), <span class="at">units =</span> <span class="st">"Mb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "9.8 Mb"</code></pre>
+</div>
+</div>
+<p>Dessa forma obtemos um objeto em memória menor do que o primeiro arquivo avaliado. Há um total de 407.582 linhas ocupando 224.4 Mb.</p>
 
 
 </section>
@@ -313,6 +476,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
   function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,

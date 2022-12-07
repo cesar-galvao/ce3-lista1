@@ -1,22 +1,140 @@
 ---
 title: "Questão 1"
+subtitle: "Leitura eficiente de dados"
 ---
+
+```{r load-pkg, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(pacman)
+path <- "../../dados_de_trabalhos/lista_1/datasus/"
+```
+
 
 <style>
 body {
 text-align: justify}
 </style>
 
-# item a)
 
-About this site
+## Item a)
 
-```{r}
-1 + 1
+Verificando a página do link disponibilizado e inspecionando o link da primeira parte de dois estados, obtém-se:
+
+* https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- AC parte 1
+* https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAC/part-00001-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- AC parte 2
+* https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3DAL/part-00000-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv -- AL parte 1
+
+Nota-se que a diferenciação quanto à UF ocorre em `uf%3D**` e que a diferenciação quanto à parte do download ocorre logo em seguida em `part-0000*`, iniciando a contagem em zero. Além disso, fica evidente que se trata de um arquivo `.csv`. 
+
+O código a seguir cria uma pasta, caso não exista, e varre a combinação de três partes para as UF: AC, AL, AM e AP.
+
+```{r download-files, eval = FALSE}
+
+path <- "../dados_de_trabalhos/lista_1/datasus/"
+
+# verifica e cria pasta
+if(!dir.exists(path)){
+  dir.create(path)
+}
+
+# cria vetores sobre os quais se ira iterar
+iterate <- tibble(
+  uf = rep(c('AC', 'AL', 'AM', 'AP'), each = 3),
+  partes = rep(c(0:2), 4)
+) %>%
+  transmute(caminho = paste0(
+      "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SIPNI/COVID/uf/uf%3D",
+            uf,
+            "/part-0000",
+            partes,
+            "-cebaa94c-82a9-46e2-8c12-9cc16a61b38b.c000.csv"),
+      destfile = paste0(
+        path,uf, partes, ".csv"
+      ))
+
+# varre os vetores realizando o download
+walk2(iterate$caminho, iterate$destfile,
+      function(x, y) download.file(url = x, destfile = y))
 ```
 
-::: callout-note
-Note that there are five types of callouts, including: `note`, `tip`, `warning`, `caution`, and `important`.
+Vemos a seguir que houve sucesso no download:
+
+```{r verifica-arquivos}
+list.files(path)
+```
+
+## Item b)
+
+Carregamos o pacote `vroom` usando a função `pacman¨p_load()` e carregamos o primeiro dos arquivos, correspondente à primeira parte de dados para o estado do Acre.
+
+Utilizando a função `dplyr::glimpse()`, verificamos que há 553.953 observações de 32 variáveis neste banco de dados. Além disso, nota-se que a função `vroom()` identificou com sucesso diversos tipos de dados das colunas, inclusive de datas. No entanto, colunas com números identificadores foram classificadas como números, o que pode trazer problemas se o número, como ocorre com o cadastro de pessoa física, inicia em um zero.
+
+```{r carga-acre, message = FALSE}
+pacman::p_load(tidyverse, vroom)
+
+dados1 <- vroom(paste0(path, "AC0.csv"))
+glimpse(dados1)
+```
+
+## Item c)
+
+A seguir verificamos o tamanho em disco do arquivo que estamos explorando e o tamanho do objeto criado após a leitura para a memória.
+
+Interessantemente, parece haver uma pequena economia de *bytes*. No entanto, o espaço ocupado em memória é proporcionalmente mais custoso em relação ao que está no disco rígido.
+
+```{r tamanhos}
+#tamanho em megabytes do arquivo
+file.size(paste0(path, "AC0.csv"))*10^(-6)
+
+#tamanho do objeto
+format(object.size(dados1), units = "Mb")
+```
+
+## Item d)
+
+Quando filtramos o arquivo diretamente no procedimento de leitura mediante a utilização de uma conexão `pipe()` para filtrar as vacinas da Janssen, verificamos que apenas 19.623 linhas foram incluídas, assim como todas as 32 variáveis que descrevem cada observação.
+
+
+```{r pipe-con, message = FALSE}
+# leitura filtrada
+comando_grep <- "grep -e vacina_fabricante_nome -e JANSSEN ../../dados_de_trabalhos/lista_1/datasus/AC0.csv"
+
+dados_jan <- vroom(pipe(comando_grep), 
+                     locale = locale("br", encoding = "latin1")
+)
+
+# tamanho
+format(object.size(dados_jan), units = "Mb")
+```
+
+Quanto ao tamanho do objeto em memória, reduzimos de `format(object.size(dados1), units = "Mb")` para `format(object.size(dados_jan), units = "Mb")`. Trata-se de uma redução de `r paste0(round((1-object.size(dados_jan)/object.size(dados1))*100,1), "%")` de espaço necessário para alocação dos dados.
+
+
+::: {.callout-note}
+Quando se usa comandos Unix, como no caso que usamos para a conexão `pipe()`, é necessário que todo o caminho do arquivo seja livre de espaços em branco. Por exemplo, o comando não funcionaria com `/dados de trabalhos/`.
 :::
 
-# item b)
+
+## Item e)
+
+Por último, realizamos a leitura de todos os arquivos obtidos do DataSUS filtrados pelo fabricante Janssen.
+
+```{r read-all, message = FALSE}
+#obtencao de enderecos completos dos arquivos
+nomes_arquivos <- str_c(path, list.files(path), collapse = " ")
+
+# leitura filtrada
+comando_grep <- paste0("grep -e vacina_fabricante_nome -e JANSSEN ", nomes_arquivos)
+
+dados_jan2 <- vroom(pipe(comando_grep), 
+                     locale = locale("br", encoding = "latin1")
+)
+
+# tamanho
+format(object.size(dados_jan), units = "Mb")
+```
+
+Dessa forma obtemos um objeto em memória menor do que o primeiro arquivo avaliado. Há um total de `r format(nrow(dados_jan2), big.mark = ".", decimal.mark = ",")` linhas ocupando `r format(object.size(dados_jan2), units = "Mb", big.mark = ".", decimal.mark = ",")`.
+
+
+

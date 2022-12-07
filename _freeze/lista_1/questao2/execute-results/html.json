@@ -1,7 +1,7 @@
 {
-  "hash": "117d426bc23bab852c086ddad2fd1fdf",
+  "hash": "13a3a9c985539cf5329d786495937f17",
   "result": {
-    "markdown": "---\ntitle: \"Questão 2\"\n---\n\n\n<style>\nbody {\ntext-align: justify}\n</style>\n\nAbout this site\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n",
+    "markdown": "---\ntitle: \"Questão 2\"\nsubtitle: \"Manipulação de dados\"\n---\n\n::: {.cell}\n\n:::\n\n\n\n<style>\nbody {\ntext-align: justify}\n</style>\n\n\n## Item a)\n",
     "supporting": [
       "questao2_files"
     ],
