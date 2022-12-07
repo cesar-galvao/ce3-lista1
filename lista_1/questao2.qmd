@@ -5,6 +5,8 @@ subtitle: "Manipulação de dados"
 
 ```{r load-pkg, echo = FALSE, message = FALSE}
 path <- "../../dados_de_trabalhos/lista_1/datasus/"
+
+arquivos <- paste0(path, list.files(path))
 ```
 
 
@@ -20,9 +22,79 @@ text-align: justify}
 pacman::p_load(tidyverse, data.table, dtplyr, microbenchmark, geobr)
 ```
 
+O procedimento a seguir lê novamente todos os arquivos adquiridos, mantendo apenas as colunas `estabelecimento_uf`, `vacina_descricao_dose` e `estabelecimento_municipio_codigo`, e obtem os dados do pacote `geobr` para as regiões de saúde.
+
+```{r fread-data}
+r_saude <- geobr::read_health_region(year = 2013)
+
+# ler arquivos com map e fread(select = c(nome das colunas))
+
+read_select <- function(x) {
+  fread(x, select = c("estabelecimento_uf", "vacina_descricao_dose", "estabelecimento_municipio_codigo"))
+}
+
+tabela <- map_df(arquivos, read_select)
+
+tabela$estabelecimento_municipio_codigo <- as.character(tabela$estabelecimento_municipio_codigo)
+
+# de fato, é um data.table
+class(tabela)
+```
+
 
 ## Item b)
 
+De acordo com sites do Governo Federal, as Regiões de Saúde são formadas por municípios fronteiriços que compartilham identidades culturais, econômicas e sociais, redes de comunicação e infraestrutura de transportes. A finalidade dessas regiões é integrar a organização, o planejamento e a execução de ações e serviços de saúde.
+
+```{r join}
+# leitura de tabela intermediaria de codigos
+codigos <- read.csv("../../dados_de_trabalhos/lista_1/Tabela_codigos.csv",
+                    colClasses = "character") %>%
+  select(-X) %>%
+  janitor::clean_names()
+
+# realiza contagens
+vacinados <- tabela[, .N, "estabelecimento_municipio_codigo"]
+
+#faz os joins de forma mais clara que o merge
+#usar o merge permitiria realizar os joins sem a sumarização do passo anterior
+joins <- inner_join(codigos, r_saude, by = c("cod_regiao_de_saude" = "code_health_region")) %>%
+  inner_join(vacinados, by = c("cod_ibge" = "estabelecimento_municipio_codigo"))%>%
+  setDT()
+
+#quantidade de vacinados por regiao de saude
+# E
+#Condicionalmente, a faixa de vacinação por região de saúde (alta ou baixa, em relação à medianada distribuição de vacinações)
+
+# utilizando operacoes encadeadas de data.table
+
+joins <- joins[, .(N = sum(N)), cod_regiao_de_saude][, cobertura := ifelse(N > median(N), 'alta', 'baixa')][order(cod_regiao_de_saude),]%>% 
+  group_by(cobertura) %>% 
+  slice_max(order_by = N, n = 5)
+
+joins %>%
+  knitr::kable(
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    col.names = c("Região de saúde", "Vacinações", "Cobertura")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
 ## Item c)
 
+Para repetimos as operações anteriores com `dtplyr`, basta passar individualmente as tabelas `tabela`, `codigos` e `r_saude` usadas no passo anterior na função `lazy_dt`, realizar as operações de join já feitas com `inner_join` e, após os agrupamentos e sumarização necessários, conforme ja feito, passar o produto das operações em pipe para ` %>% as_tibble()`.
+
+Este fluxo de trabalho permite trabalhar com a classe de dados do pacote `dtplyr` e o último passo devolve um objeto tabular completo para o usuário.
+
 ## Item d)
+
+*--microbenchmark--*

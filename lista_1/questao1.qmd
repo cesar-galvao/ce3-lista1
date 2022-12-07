@@ -137,7 +137,9 @@ format(object.size(dados_jan2), units = "Mb")
 Dessa forma obtemos um objeto em memória menor do que o primeiro arquivo avaliado. Há um total de `r format(nrow(dados_jan2), big.mark = ".", decimal.mark = ",")` linhas ocupando `r format(object.size(dados_jan2), units = "Mb", big.mark = ",", small.mark = ",", decimal.mark = ".")`.
 
 ```{r include = FALSE}
-rm(list =ls())
+arquivos <- paste0(path, list.files(path))
+rm(list = setdiff(ls(), "arquivos"))
+
 gc()
 ```
 
