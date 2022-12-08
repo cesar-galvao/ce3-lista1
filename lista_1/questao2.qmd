@@ -43,9 +43,12 @@ read_select <- function(x) {
   fread(x, select = c("estabelecimento_uf", "vacina_descricao_dose", "estabelecimento_municipio_codigo"))
 }
 
-tabela <- map_df(arquivos, read_select)
+tabela <- map_df(arquivos, read_select) %>%
+  setnames('estabelecimento_municipio_codigo', 'cod_ibge')
 
-tabela$estabelecimento_municipio_codigo <- as.character(tabela$estabelecimento_municipio_codigo)
+#usando o mutate direto no passo anterior realiza coerção
+# para dtplyr step em vez de data.table. Exigiria um as_tibble
+tabela$cod_ibge <- as.character(tabela$cod_ibge)
 
 # de fato, é um data.table
 class(tabela)
@@ -58,19 +61,17 @@ De acordo com sites do Governo Federal, as Regiões de Saúde são formadas por 
 
 ```{r join}
 # leitura de tabela intermediaria de codigos
-codigos <- read.csv("../../dados_de_trabalhos/lista_1/Tabela_codigos.csv",
-                    colClasses = "character") %>%
-  select(-X) %>%
-  janitor::clean_names()
-
-# realiza contagens
-vacinados <- tabela[, .N, "estabelecimento_municipio_codigo"]
+codigos <- fread("../../dados_de_trabalhos/lista_1/Tabela_codigos.csv",
+                 select = c("Cód IBGE", "Cód Região de Saúde")) %>%
+  janitor::clean_names() %>%
+  setnames('cod_regiao_de_saude','code_health_region') %>%
+  map_df(as.character)%>%
+  setDT()
 
 #faz os joins de forma mais clara que o merge
 #usar o merge permitiria realizar os joins sem a sumarização do passo anterior
-joins <- inner_join(codigos, r_saude, by = c("cod_regiao_de_saude" = "code_health_region")) %>%
-  inner_join(vacinados, by = c("cod_ibge" = "estabelecimento_municipio_codigo"))%>%
-  setDT()
+joins <- merge(codigos, r_saude, by = "code_health_region")
+joins <- merge(joins, tabela[, .N, "cod_ibge"], by = "cod_ibge")
 
 #quantidade de vacinados por regiao de saude
 # E
@@ -78,7 +79,7 @@ joins <- inner_join(codigos, r_saude, by = c("cod_regiao_de_saude" = "code_healt
 
 # utilizando operacoes encadeadas de data.table
 
-joins <- joins[, .(N = sum(N)), cod_regiao_de_saude][, cobertura := ifelse(N > median(N), 'alta', 'baixa')][order(cod_regiao_de_saude),]%>% 
+joins <- joins[, .(N = sum(N)), code_health_region][, cobertura := ifelse(N > median(N), 'alta', 'baixa')][order(code_health_region),]%>% 
   group_by(cobertura) %>% 
   slice_max(order_by = N, n = 5)
 
@@ -101,10 +102,78 @@ joins %>%
 
 ## Item c)
 
-Para repetimos as operações anteriores com `dtplyr`, basta passar individualmente as tabelas `tabela`, `codigos` e `r_saude` usadas no passo anterior na função `lazy_dt`, realizar as operações de join já feitas com `inner_join` e, após os agrupamentos e sumarização necessários, conforme ja feito, passar o produto das operações em pipe para ` %>% as_tibble()`.
+Para repetimos as operações anteriores com `dtplyr`, basta passar individualmente as tabelas `tabela`, `codigos` e `r_saude` usadas no passo anterior na função `lazy_dt`, realizar as operações de join já feitas com `inner_join` e, após os agrupamentos e sumarização necessários com verbos tidy, passar o produto das operações em pipe para ` %>% as_tibble()`. A última função traz um objeto com todos os casos explícitos, ocupando menos espaço do o processamento de todos os objetos iniciais, grandes, em formato tibble.
 
-Este fluxo de trabalho permite trabalhar com a classe de dados do pacote `dtplyr` e o último passo devolve um objeto tabular completo para o usuário.
+```{r dtplyr}
+tabela %>%
+  lazy_dt()%>%
+  group_by(cod_ibge) %>%
+  summarise(N = n()) %>%
+  ungroup()%>%
+  inner_join(codigos, by = "cod_ibge") %>%
+  inner_join(r_saude, by = "code_health_region") %>%
+  group_by(code_health_region) %>%
+  summarise(N = sum(N)) %>%
+  mutate(cobertura = if_else(N > median(N), 'alta', 'baixa')) %>%
+  group_by(cobertura) %>%
+  slice_max(order_by = N, n = 5) %>% 
+  as_tibble()%>%
+  # ATE AQUI TEMOS O CÁLCULO. A SEGUIR APENAS ESTÉTICA
+  knitr::kable(
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    col.names = c("Região de saúde", "Vacinações", "Cobertura")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
 
 ## Item d)
 
-*--microbenchmark--*
+```{r e-c-functions, include = FALSE}
+func_datatable <- function(){
+  joins <- merge(codigos, r_saude, by = "code_health_region")
+  joins <- merge(joins, tabela[, .N, "cod_ibge"], by = "cod_ibge")
+  joins <- joins[, .(N = sum(N)), code_health_region][, cobertura := ifelse(N > median(N), 'alta', 'baixa')][order(code_health_region),]%>% 
+  group_by(cobertura) %>% 
+  slice_max(order_by = N, n = 5)
+}
+
+func_dtplyr <- function(){
+  tabela %>%
+  lazy_dt()%>%
+  group_by(cod_ibge) %>%
+  summarise(N = n()) %>%
+  ungroup()%>%
+  inner_join(codigos, by = "cod_ibge") %>%
+  inner_join(r_saude, by = "code_health_region") %>%
+  group_by(code_health_region) %>%
+  summarise(N = sum(N)) %>%
+  mutate(cobertura = if_else(N > median(N), 'alta', 'baixa')) %>%
+  group_by(cobertura) %>%
+  slice_max(order_by = N, n = 5) %>% 
+  as_tibble()
+}
+```
+
+
+Para este item, os procedimentos dos itens b) e c) foram transformados em funções, para simplificar a visualização. As mesmas operações foram utilizadas.
+
+```{r microbenchmark}
+
+microbenchmark(
+  dtplyr = func_dtplyr(),
+  data.table = func_datatable(),
+  times = 30
+)
+
+```
+

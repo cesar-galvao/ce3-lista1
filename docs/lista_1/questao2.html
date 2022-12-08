@@ -257,12 +257,15 @@ text-align: justify}
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fread</span>(x, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">"estabelecimento_uf"</span>, <span class="st">"vacina_descricao_dose"</span>, <span class="st">"estabelecimento_municipio_codigo"</span>))</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>tabela <span class="ot">&lt;-</span> <span class="fu">map_df</span>(arquivos, read_select)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>tabela<span class="sc">$</span>estabelecimento_municipio_codigo <span class="ot">&lt;-</span> <span class="fu">as.character</span>(tabela<span class="sc">$</span>estabelecimento_municipio_codigo)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># de fato, é um data.table</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(tabela)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>tabela <span class="ot">&lt;-</span> <span class="fu">map_df</span>(arquivos, read_select) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setnames</span>(<span class="st">'estabelecimento_municipio_codigo'</span>, <span class="st">'cod_ibge'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#usando o mutate direto no passo anterior realiza coerção</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># para dtplyr step em vez de data.table. Exigiria um as_tibble</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>tabela<span class="sc">$</span>cod_ibge <span class="ot">&lt;-</span> <span class="fu">as.character</span>(tabela<span class="sc">$</span>cod_ibge)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># de fato, é um data.table</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(tabela)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "data.table" "data.frame"</code></pre>
 </div>
@@ -273,43 +276,41 @@ text-align: justify}
 <p>De acordo com sites do Governo Federal, as Regiões de Saúde são formadas por municípios fronteiriços que compartilham identidades culturais, econômicas e sociais, redes de comunicação e infraestrutura de transportes. A finalidade dessas regiões é integrar a organização, o planejamento e a execução de ações e serviços de saúde.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># leitura de tabela intermediaria de codigos</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>codigos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../../dados_de_trabalhos/lista_1/Tabela_codigos.csv"</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">colClasses =</span> <span class="st">"character"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>X) <span class="sc">%&gt;%</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># realiza contagens</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>vacinados <span class="ot">&lt;-</span> tabela[, .N, <span class="st">"estabelecimento_municipio_codigo"</span>]</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#faz os joins de forma mais clara que o merge</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#usar o merge permitiria realizar os joins sem a sumarização do passo anterior</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>joins <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(codigos, r_saude, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"cod_regiao_de_saude"</span> <span class="ot">=</span> <span class="st">"code_health_region"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(vacinados, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"cod_ibge"</span> <span class="ot">=</span> <span class="st">"estabelecimento_municipio_codigo"</span>))<span class="sc">%&gt;%</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setDT</span>()</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#quantidade de vacinados por regiao de saude</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># E</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#Condicionalmente, a faixa de vacinação por região de saúde (alta ou baixa, em relação à medianada distribuição de vacinações)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>codigos <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"../../dados_de_trabalhos/lista_1/Tabela_codigos.csv"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">select =</span> <span class="fu">c</span>(<span class="st">"Cód IBGE"</span>, <span class="st">"Cód Região de Saúde"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setnames</span>(<span class="st">'cod_regiao_de_saude'</span>,<span class="st">'code_health_region'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_df</span>(as.character)<span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setDT</span>()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#faz os joins de forma mais clara que o merge</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#usar o merge permitiria realizar os joins sem a sumarização do passo anterior</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>joins <span class="ot">&lt;-</span> <span class="fu">merge</span>(codigos, r_saude, <span class="at">by =</span> <span class="st">"code_health_region"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>joins <span class="ot">&lt;-</span> <span class="fu">merge</span>(joins, tabela[, .N, <span class="st">"cod_ibge"</span>], <span class="at">by =</span> <span class="st">"cod_ibge"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#quantidade de vacinados por regiao de saude</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># E</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#Condicionalmente, a faixa de vacinação por região de saúde (alta ou baixa, em relação à medianada distribuição de vacinações)</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># utilizando operacoes encadeadas de data.table</span></span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># utilizando operacoes encadeadas de data.table</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>joins <span class="ot">&lt;-</span> joins[, .(<span class="at">N =</span> <span class="fu">sum</span>(N)), cod_regiao_de_saude][, cobertura <span class="sc">:</span><span class="er">=</span> <span class="fu">ifelse</span>(N <span class="sc">&gt;</span> <span class="fu">median</span>(N), <span class="st">'alta'</span>, <span class="st">'baixa'</span>)][<span class="fu">order</span>(cod_regiao_de_saude),]<span class="sc">%&gt;%</span> </span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cobertura) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> N, <span class="at">n =</span> <span class="dv">5</span>)</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>joins <span class="sc">%&gt;%</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="st">"c"</span>,</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">booktabs =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">longtable =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">linesep =</span> <span class="st">""</span>,</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">escape =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Região de saúde"</span>, <span class="st">"Vacinações"</span>, <span class="st">"Cobertura"</span>)</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">position =</span> <span class="st">"center"</span>,</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">latex_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"repeat_header"</span>),</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">stripe_color =</span> <span class="st">"gray!15"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>joins <span class="ot">&lt;-</span> joins[, .(<span class="at">N =</span> <span class="fu">sum</span>(N)), code_health_region][, cobertura <span class="sc">:</span><span class="er">=</span> <span class="fu">ifelse</span>(N <span class="sc">&gt;</span> <span class="fu">median</span>(N), <span class="st">'alta'</span>, <span class="st">'baixa'</span>)][<span class="fu">order</span>(code_health_region),]<span class="sc">%&gt;%</span> </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cobertura) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> N, <span class="at">n =</span> <span class="dv">5</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>joins <span class="sc">%&gt;%</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="st">"c"</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">booktabs =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">longtable =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">linesep =</span> <span class="st">""</span>,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">escape =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Região de saúde"</span>, <span class="st">"Vacinações"</span>, <span class="st">"Cobertura"</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">position =</span> <span class="st">"center"</span>,</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">latex_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"repeat_header"</span>),</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">stripe_color =</span> <span class="st">"gray!15"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -379,12 +380,117 @@ text-align: justify}
 </section>
 <section id="item-c" class="level2">
 <h2 class="anchored" data-anchor-id="item-c">Item c)</h2>
-<p>Para repetimos as operações anteriores com <code>dtplyr</code>, basta passar individualmente as tabelas <code>tabela</code>, <code>codigos</code> e <code>r_saude</code> usadas no passo anterior na função <code>lazy_dt</code>, realizar as operações de join já feitas com <code>inner_join</code> e, após os agrupamentos e sumarização necessários, conforme ja feito, passar o produto das operações em pipe para <code>%&gt;% as_tibble()</code>.</p>
-<p>Este fluxo de trabalho permite trabalhar com a classe de dados do pacote <code>dtplyr</code> e o último passo devolve um objeto tabular completo para o usuário.</p>
+<p>Para repetimos as operações anteriores com <code>dtplyr</code>, basta passar individualmente as tabelas <code>tabela</code>, <code>codigos</code> e <code>r_saude</code> usadas no passo anterior na função <code>lazy_dt</code>, realizar as operações de join já feitas com <code>inner_join</code> e, após os agrupamentos e sumarização necessários com verbos tidy, passar o produto das operações em pipe para <code>%&gt;% as_tibble()</code>. A última função traz um objeto com todos os casos explícitos, ocupando menos espaço do o processamento de todos os objetos iniciais, grandes, em formato tibble.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tabela <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lazy_dt</span>()<span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cod_ibge) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()<span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(codigos, <span class="at">by =</span> <span class="st">"cod_ibge"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(r_saude, <span class="at">by =</span> <span class="st">"code_health_region"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_health_region) <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">sum</span>(N)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cobertura =</span> <span class="fu">if_else</span>(N <span class="sc">&gt;</span> <span class="fu">median</span>(N), <span class="st">'alta'</span>, <span class="st">'baixa'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cobertura) <span class="sc">%&gt;%</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> N, <span class="at">n =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()<span class="sc">%&gt;%</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ATE AQUI TEMOS O CÁLCULO. A SEGUIR APENAS ESTÉTICA</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="st">"c"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">booktabs =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">longtable =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">linesep =</span> <span class="st">""</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">escape =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Região de saúde"</span>, <span class="st">"Vacinações"</span>, <span class="st">"Cobertura"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">position =</span> <span class="st">"center"</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">latex_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"repeat_header"</span>),</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">stripe_color =</span> <span class="st">"gray!15"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Região de saúde </th>
+   <th style="text-align:center;"> Vacinações </th>
+   <th style="text-align:center;"> Cobertura </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> 13001 </td>
+   <td style="text-align:center;"> 5594673 </td>
+   <td style="text-align:center;"> alta </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 27001 </td>
+   <td style="text-align:center;"> 2803602 </td>
+   <td style="text-align:center;"> alta </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 12002 </td>
+   <td style="text-align:center;"> 1121221 </td>
+   <td style="text-align:center;"> alta </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 27007 </td>
+   <td style="text-align:center;"> 1018179 </td>
+   <td style="text-align:center;"> alta </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 16001 </td>
+   <td style="text-align:center;"> 942405 </td>
+   <td style="text-align:center;"> alta </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 13004 </td>
+   <td style="text-align:center;"> 362557 </td>
+   <td style="text-align:center;"> baixa </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 27003 </td>
+   <td style="text-align:center;"> 360353 </td>
+   <td style="text-align:center;"> baixa </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 13009 </td>
+   <td style="text-align:center;"> 359768 </td>
+   <td style="text-align:center;"> baixa </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 27008 </td>
+   <td style="text-align:center;"> 328312 </td>
+   <td style="text-align:center;"> baixa </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 27010 </td>
+   <td style="text-align:center;"> 317777 </td>
+   <td style="text-align:center;"> baixa </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
 </section>
 <section id="item-d" class="level2">
 <h2 class="anchored" data-anchor-id="item-d">Item d)</h2>
-<p><em>–microbenchmark–</em></p>
+<p>Para este item, os procedimentos dos itens b) e c) foram transformados em funções, para simplificar a visualização. As mesmas operações foram utilizadas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dtplyr =</span> <span class="fu">func_dtplyr</span>(),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data.table =</span> <span class="fu">func_datatable</span>(),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">30</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unit: milliseconds
+       expr      min       lq     mean   median       uq      max neval cld
+     dtplyr 155.5316 179.6866 206.7437 197.1196 230.6750 363.9243    30   a
+ data.table 147.7384 166.9060 192.9997 185.3823 216.9624 279.0396    30   a</code></pre>
+</div>
+</div>
 
 
 </section>
