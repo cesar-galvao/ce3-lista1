@@ -1,0 +1,84 @@
+---
+title: "Questão 1"
+subtitle: "Criando bancos de dados"
+---
+
+```{r load-pkg, echo = FALSE, message = FALSE}
+library(pacman)
+#path <- "../../dados_de_trabalhos/lista_1/datasus/"
+```
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+## Item a)
+
+Primeiro carregamos os pacotes necessários:
+
+```{r pacotes-db}
+#carregando pacotes
+pacman::p_load(dplyr, tidyverse, stringr, 
+       vroom, mongolite, RSQLite, DBI, dbplyr)
+```
+
+Em seguida criamos uma conexão com um banco de dados SQLite e verificamos que ele existe, porem sem tabelas.
+
+```{r}
+mydb <- dbConnect(RSQLite::SQLite(), "my-db.sqlite")
+
+mydb
+
+dbListTables(mydb)
+```
+
+Para inserir os dados do exercício 1a) da lista anterior, montamos uma função que faz a leitura e a anexação diretamente ao banco de dados:
+
+```{r warning = FALSE, message=FALSE}
+#identificamos a pasta e os arquivos existentes
+path <- "../../dados_de_trabalhos/lista_1/datasus/"
+list.files(path)
+
+#montamos os nomes completos dos arquivos
+arquivos <- paste0(path, list.files(path))
+
+
+#fundamos uma tabela cujo nome é dados e recebe o primeiro arquivo
+vroom(arquivos[1], 
+      col_select = c("estabelecimento_uf", "vacina_descricao_dose", "estabelecimento_municipio_codigo"),
+      locale = locale("br", encoding = "UTF-8"),
+               num_threads = 3) %>% 
+dbWriteTable(mydb, "dados", .)
+
+
+
+
+#montamos uma função que apensa as novas tabelas ao banco  
+append_na_db <- function(arquivo, conn) {
+  vroom(arquivo, 
+      col_select = c("estabelecimento_uf", "vacina_descricao_dose", "estabelecimento_municipio_codigo"),
+      locale = locale("br", encoding = "UTF-8"),
+               num_threads = 3) %>% 
+  dbAppendTable(conn, "dados", .)
+}
+
+#iteramos sobre os arquivos restantes a função que criamos  
+walk(arquivos[-1],
+      append_na_db, 
+      conn = mydb)
+```
+
+Visto que não recebemos qualquer mensagem de erro, verificamos a seguir a quantidade de casos e um extrato do que importamos para a base.
+
+
+```{r}
+dbGetQuery(mydb, "SELECT COUNT(*) FROM dados")
+dbGetQuery(mydb, "SELECT * FROM dados LIMIT 5") 
+```
+
+
+
+

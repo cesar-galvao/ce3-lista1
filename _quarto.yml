@@ -12,7 +12,8 @@ website:
         file: index.qmd
       - text: "Lista 1"
         file: lista_1/lista1.qmd
-
+      - text: "Lista 2"
+        file: lista_2/questao1.qmd
       - text: "About"
         file: about/about.qmd
     right: 
@@ -30,6 +31,11 @@ website:
       - lista_1/lista1.qmd
       - lista_1/questao1.qmd
       - lista_1/questao2.qmd
+    - title: "Lista 2"
+      style: "docked"
+      contents: 
+      - lista_2/questao1.qmd
+      
   
   page-navigation: true
   page-footer: "César A. Galvão, 2022"
